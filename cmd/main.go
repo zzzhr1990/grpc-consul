@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := server.RegisterToConsul(&server.ConsulRegisterConfig{
+	_, err := server.RegisterToConsul(&server.ConsulRegisterConfig{
 		ConsulAddress: "",
 	})
 	if err != nil {

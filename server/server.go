@@ -16,18 +16,36 @@ type ConsulRegisterConfig struct {
 	EnableCheck   bool
 }
 
+type ConsulResult struct {
+	Agent    *api.Agent
+	ServerID string
+}
+
+func NewConsulResult(agent *api.Agent, serverID string) *ConsulResult {
+	return &ConsulResult{
+		Agent:    agent,
+		ServerID: serverID,
+	}
+}
+
+func (c *ConsulResult) ShutdownAgent() error {
+	//return c.Agent
+	return c.Agent.ServiceDeregister(c.ServerID)
+}
+
 // RegistToConsul register service to consul
-func RegisterToConsul(registerConfig *ConsulRegisterConfig) error {
+func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, error) {
 	// Create a new consul client
 	cfg := api.DefaultConfig()
 	cfg.Address = registerConfig.ConsulAddress
 	client, err := api.NewClient(cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Create a new agent
 	agent := client.Agent()
+	// agent.ServiceDeregister()
 
 	// Register service with consul
 	reg := &api.AgentServiceRegistration{
@@ -47,7 +65,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) error {
 
 	err = agent.ServiceRegister(reg)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return NewConsulResult(agent, registerConfig.ServerID), nil
 }
