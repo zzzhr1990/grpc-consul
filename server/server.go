@@ -61,6 +61,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, erro
 			// TTL:                            "15s",
 			Interval:                       "10s",
 			GRPC:                           fmt.Sprintf("%v:%v", registerConfig.ServiceIP, registerConfig.ServicePort),
+			Timeout:                        "5s",
 			DeregisterCriticalServiceAfter: "30s",
 		}
 	}
