@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/consul/api"
+	"github.com/pkg/errors"
 )
 
 // ConsulRegisterConfig unregister service from consul
@@ -40,7 +41,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, erro
 	cfg.Address = registerConfig.ConsulAddress
 	client, err := api.NewClient(cfg)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "create consul client failed")
 	}
 
 	// Create a new agent
@@ -57,7 +58,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, erro
 
 	if registerConfig.EnableCheck {
 		reg.Check = &api.AgentServiceCheck{
-			TTL:                            "15s",
+			// TTL:                            "15s",
 			Interval:                       "10s",
 			GRPC:                           fmt.Sprintf("%v:%v/%v", registerConfig.ServiceIP, registerConfig.ServicePort, registerConfig.Name),
 			DeregisterCriticalServiceAfter: "30s",
@@ -66,7 +67,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, erro
 
 	err = agent.ServiceRegister(reg)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "register service failed")
 	}
 	return NewConsulResult(agent, registerConfig.ServerID), nil
 }
