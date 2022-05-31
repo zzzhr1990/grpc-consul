@@ -60,7 +60,7 @@ func RegisterToConsul(registerConfig *ConsulRegisterConfig) (*ConsulResult, erro
 		reg.Check = &api.AgentServiceCheck{
 			// TTL:                            "15s",
 			Interval:                       "10s",
-			GRPC:                           fmt.Sprintf("%v:%v/%v", registerConfig.ServiceIP, registerConfig.ServicePort, registerConfig.Name),
+			GRPC:                           fmt.Sprintf("%v:%v", registerConfig.ServiceIP, registerConfig.ServicePort),
 			DeregisterCriticalServiceAfter: "30s",
 		}
 	}
